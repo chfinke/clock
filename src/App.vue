@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="!timer"
+    v-if="!timer.duration"
   >
     <button
       v-for="duration in PRESET_DURATIONS" :key=duration
@@ -11,7 +11,7 @@
     </button>
   </div>
   <div
-    v-if="timer"
+    v-if="timer.duration"
   >
     <div
       style="display: flex; flex-direction: column; height: 100vh; height: calc(100dvh - 16px); margin-bottom: 8px;"
@@ -57,7 +57,7 @@ import { ref } from "vue";
   const PRESET_DURATIONS = [5, 10, 15, 25, 30, 45, 60, 90, 120];
   const BAR_COUNT = 15;
 
-  const bars = [];
+  const bars: number[] = [];
   for (let i = BAR_COUNT; i > 0; i--) {
     bars.push(i);
   }
@@ -66,10 +66,16 @@ import { ref } from "vue";
   interface Timer {
     duration: number;
     step: number;
-    intervalId: NodeJS.Timeout | string | number | undefined;
+    intervalId: any;
   }
 
-  const timer = ref<Timer | null>(null)
+  const emptyTimer: Timer = {
+    duration: 0,
+    step: 0,
+    intervalId: null,
+  }
+
+  const timer = ref<Timer>(emptyTimer)
 
   const startTimer = (duration: number) => {
     window.scrollTo(0,0);
@@ -99,6 +105,6 @@ import { ref } from "vue";
 
   const onBack = () => {
     clearInterval(timer.value.intervalId)
-    timer.value = null;
+    timer.value = emptyTimer;
   }
 </script>

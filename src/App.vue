@@ -16,7 +16,6 @@
     <div
       style="display: flex; flex-direction: column; height: 100vh; height: calc(100dvh - 16px); margin-bottom: 8px;"
     >
-      <!-- <span>[{{ timer }}]</span> -->
       <div
         v-for="i of bars" :key="i"
         class="bar bar--grow" 
@@ -61,7 +60,6 @@ import { ref } from "vue";
   for (let i = BAR_COUNT; i > 0; i--) {
     bars.push(i);
   }
-
 
   interface Timer {
     duration: number;

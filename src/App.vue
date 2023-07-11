@@ -54,7 +54,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-  const PRESET_DURATIONS = [5, 10, 15, 25, 30, 45, 60, 90, 120];
+  const PRESET_DURATIONS = [2, 5, 10, 15, 25, 30, 45, 60, 90, 120];
   const BAR_COUNT = 15;
 
   const bars: number[] = [];

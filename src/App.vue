@@ -20,10 +20,10 @@
         v-for="i of bars" :key="i"
         class="bar bar--grow" 
         :class="{
-          'bar--green': timer.step >= i*4 && timer.step < 4*BAR_COUNT + i,
-          'bar--yellow': timer.step >= 4*BAR_COUNT + i && timer.step < 5*BAR_COUNT + i,
-          'bar--red': timer.step >= 5*BAR_COUNT + i,
-          'bar--flashing': timer.step >= 6*BAR_COUNT,
+          'bar--green': timer.step >= i*8 && timer.step < 8*BAR_COUNT + i,
+          'bar--yellow': timer.step >= 8*BAR_COUNT + i && timer.step < 9*BAR_COUNT + i,
+          'bar--red': timer.step >= 9*BAR_COUNT + i,
+          'bar--flashing': timer.step >= 10*BAR_COUNT,
         }"
       ></div>
     </div>
@@ -37,7 +37,7 @@
     <button
       v-if="!timer.intervalId"
       class="bar bar--label bar--green" 
-      @click="onResume"
+      @click="startTimer()"
     >
       resume
     </button>
@@ -75,17 +75,16 @@ import { ref } from "vue";
 
   const timer = ref<Timer>(emptyTimer)
 
-  const startTimer = (duration: number) => {
+  const startTimer = (duration?: number) => {
     window.scrollTo(0,0);
-    timer.value = {
-        duration,
-        step: 0,
-        intervalId: setInterval(
-          () => timer.value.step += 1,
-          duration * 60000 / (6 * BAR_COUNT),
-        )
-    };
-    
+    if (duration) {
+      timer.value.duration = duration;
+      timer.value.step = 0;
+    }
+    timer.value.intervalId = setInterval(
+      () => timer.value.step += 1,
+      timer.value.duration * 60000 / (10 * BAR_COUNT),
+    )
   }
 
   const onPause = () => {
@@ -93,16 +92,9 @@ import { ref } from "vue";
     timer.value.intervalId = null;
   }
 
-  const onResume = () => {
-    window.scrollTo(0,0);
-    timer.value.intervalId = setInterval(
-      () => timer.value.step += 1,
-      timer.value.duration * 60000 / (6 * BAR_COUNT),
-    )
-  }
-
   const onBack = () => {
     clearInterval(timer.value.intervalId)
     timer.value = emptyTimer;
   }
+
 </script>

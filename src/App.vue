@@ -93,8 +93,7 @@ import { ref } from "vue";
   }
 
   const onBack = () => {
-    clearInterval(timer.value.intervalId)
-    timer.value = emptyTimer;
+    location.reload();
   }
 
 </script>

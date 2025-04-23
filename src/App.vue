@@ -48,11 +48,17 @@
       back
     </button>
   </div>
+  <div class="footer">
+    clock v{{ VERSION }} <span v-if="!!BUILD">b{{  BUILD }}</span>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
 import { useWakeLock } from '@vueuse/core'
+
+  const VERSION = '1.0.0'
+  const BUILD = 1
 
   const wakeLock = useWakeLock()
 

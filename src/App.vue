@@ -52,6 +52,9 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { useWakeLock } from '@vueuse/core'
+
+  const wakeLock = useWakeLock()
 
   const PRESET_DURATIONS = [2, 5, 10, 15, 25, 30, 45, 60, 90, 120];
   const BAR_COUNT = 15;
@@ -75,7 +78,7 @@ import { ref } from "vue";
 
   const timer = ref<Timer>(emptyTimer)
 
-  const startTimer = (duration?: number) => {
+  const startTimer = async (duration?: number) => {
     window.scrollTo(0,0);
     if (duration) {
       timer.value.duration = duration;
@@ -85,15 +88,37 @@ import { ref } from "vue";
       () => timer.value.step += 1,
       timer.value.duration * 60000 / (10 * BAR_COUNT),
     )
+    await lockScreen();
   }
 
-  const onPause = () => {
+  const onPause = async () => {
     clearInterval(timer.value.intervalId)
     timer.value.intervalId = null;
+    await unlockScreen();
   }
 
-  const onBack = () => {
+  const onBack = async () => {
+    await unlockScreen();
     location.reload();
+  }
+
+  const lockScreen = async () => {
+    console.log(wakeLock.isSupported.value);
+    
+    if (wakeLock.isSupported.value && !wakeLock.isActive.value) {
+      try {
+        await wakeLock.request('screen')
+        
+      } catch (error) {
+        console.error('Failed to acquire wake lock:', error)
+      }
+    }
+  }
+
+  const unlockScreen = async () => {
+    if (wakeLock.isSupported.value && wakeLock.isActive.value) {
+      await wakeLock.release();
+    }
   }
 
 </script>

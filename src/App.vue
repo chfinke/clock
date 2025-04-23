@@ -1,4 +1,5 @@
 <template>
+<div ref="container">
   <div
     v-if="!timer.duration"
   >
@@ -8,6 +9,12 @@
       @click="startTimer(duration)"
     >
       {{ duration }}
+    </button>
+    <button
+      class="bar bar--label bar--yellow"
+      @click="toggleFullscreen"
+    >
+      toggle fullscreen
     </button>
   </div>
   <div
@@ -51,15 +58,21 @@
   <div class="footer">
     clock v{{ VERSION }} <span v-if="!!BUILD">b{{  BUILD }}</span>
   </div>
+</div>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
 import { useWakeLock } from '@vueuse/core'
+import { useFullscreen } from '@vueuse/core'
 
-  const VERSION = '1.0.0'
-  const BUILD = 1
+  const VERSION = '1.1.0'
+  const BUILD = 0
 
+  const el = ref(null)
+  const { 
+    toggle: toggleFullscreen,
+  } = useFullscreen(el)
   const wakeLock = useWakeLock()
 
   const PRESET_DURATIONS = [2, 5, 10, 15, 25, 30, 45, 60, 90, 120];
@@ -82,7 +95,7 @@ import { useWakeLock } from '@vueuse/core'
     intervalId: null,
   }
 
-  const timer = ref<Timer>(emptyTimer)
+  const timer = ref<Timer>({...emptyTimer})
 
   const startTimer = async (duration?: number) => {
     window.scrollTo(0,0);
@@ -94,7 +107,7 @@ import { useWakeLock } from '@vueuse/core'
       () => timer.value.step += 1,
       timer.value.duration * 60000 / (10 * BAR_COUNT),
     )
-    await lockScreen();
+    await lockScreen()
   }
 
   const onPause = async () => {
@@ -104,13 +117,11 @@ import { useWakeLock } from '@vueuse/core'
   }
 
   const onBack = async () => {
+    reset();
     await unlockScreen();
-    location.reload();
   }
 
   const lockScreen = async () => {
-    console.log(wakeLock.isSupported.value);
-    
     if (wakeLock.isSupported.value && !wakeLock.isActive.value) {
       try {
         await wakeLock.request('screen')
@@ -125,6 +136,11 @@ import { useWakeLock } from '@vueuse/core'
     if (wakeLock.isSupported.value && wakeLock.isActive.value) {
       await wakeLock.release();
     }
+  }
+
+  const reset = () => {
+    clearInterval(timer.value.intervalId)
+    timer.value = {...emptyTimer}
   }
 
 </script>
